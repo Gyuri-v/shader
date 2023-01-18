@@ -5,6 +5,7 @@ const App = function () {
   let ww, wh;
   let renderer, scene, camera, light, controls;
   let isRequestRender = false;
+  // let sphere;
 
   const $container = document.querySelector('.container');
   let $canvas;
@@ -27,7 +28,7 @@ const App = function () {
 
     // Camera
     camera = new THREE.PerspectiveCamera(70, ww / wh, 0.1, 1000);
-    camera.position.set(0, 0, 40);
+    camera.position.set(0, 0, 4);
     scene.add(camera);
 
     // Light
@@ -65,16 +66,36 @@ const App = function () {
 
   // Setting -------------------
   const setModels = function () {
+    const attributes = {
+      displacement: {
+        type: 'f',
+        value: [],
+      },
+    };
+
+    const values = attributes.displacement.value;
+    // const vertCount = 242;
+    // for (var v = 0; v < vertCount; v++) {
+    //   values.push(Math.random() * 30);
+    // }
+
+    // console.log(attributes);
+
     const shaderMaterial = new THREE.ShaderMaterial({
+      attributes: attributes,
+      // uniforms: {},
       vertexShader: `
+        attribute float displacement;
         varying vec3 vNormal;
         void main()
         {
           vNormal = normal; 
+
+          vec3 newPosition = position + normal * vec3(displacement);
         
           gl_Position = projectionMatrix *
                         modelViewMatrix *
-                        vec4(position, 1.0);
+                        vec4(newPosition, 1.0);
         }`,
       fragmentShader: `
         varying vec3 vNormal;
@@ -93,7 +114,15 @@ const App = function () {
         }`,
     });
 
-    const sphere = new THREE.Mesh(new THREE.SphereGeometry(15, 32, 16), shaderMaterial);
+    console.log(shaderMaterial);
+
+    const sphereGeo = new THREE.BufferGeometry();
+    const vertices = new Float32Array([-1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0]);
+    sphereGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+    const sphere = new THREE.Mesh(sphereGeo, material);
+
     scene.add(sphere);
   };
 
