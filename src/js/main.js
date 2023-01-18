@@ -67,18 +67,33 @@ const App = function () {
   const setModels = function () {
     const shaderMaterial = new THREE.ShaderMaterial({
       vertexShader: `
+        varying vec3 vNormal;
         void main()
         {
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+          vNormal = normal; 
+        
+          gl_Position = projectionMatrix *
+                        modelViewMatrix *
+                        vec4(position, 1.0);
         }`,
       fragmentShader: `
+        varying vec3 vNormal;
         void main()
         {
-          gl_FragColor 	= vec4(1.0,0.0,1.0,1.0);
+          vec3 light = vec3(0.5, 0.2, 1.0);
+        
+          light = normalize(light);
+        
+          float dProd = max(0.0, dot(vNormal, light));
+        
+          gl_FragColor = vec4(dProd, // R
+                              dProd, // G
+                              dProd, // B
+                              1.0);  // A
         }`,
     });
 
-    const sphere = new THREE.Mesh(new THREE.SphereGeometry(15, 32, 16), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(15, 32, 16), shaderMaterial);
     scene.add(sphere);
   };
 
