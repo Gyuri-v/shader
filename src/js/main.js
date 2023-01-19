@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import dat from 'dat.gui';
 
-import testVertexShader from '../glsl/vertex.glsl';
-import testFragmentShader from '../glsl/fragment.glsl';
+import vertexShader from '../glsl/vertex.glsl';
+import fragmentShader from '../glsl/fragment.glsl';
 
 const App = function () {
   let ww, wh;
-  let renderer, scene, camera, light, controls;
+  let renderer, scene, camera, light, controls, gui;
   let isRequestRender = false;
   let clock;
   let geometry, material, model;
@@ -43,11 +44,8 @@ const App = function () {
     controls = new OrbitControls(camera, $canvas);
     controls.addEventListener('change', renderRequest);
 
-    const axesHelper = new THREE.AxesHelper(3);
-    scene.add(axesHelper);
-
     // Gui
-    // gui = new dat.GUI();
+    gui = new dat.GUI();
 
     // Clock
     clock = new THREE.Clock();
@@ -74,7 +72,22 @@ const App = function () {
   // Setting -------------------
   const setModels = function () {
     geometry = new THREE.PlaneGeometry(2, 2, 128, 128);
-    material = new THREE.MeshBasicMaterial();
+    material = new THREE.ShaderMaterial({
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+      uniforms: {
+        uBigWavesElevation: { value: 0.2 },
+        uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
+        uBigWavesSpeed: { value: 0.75 },
+        uTime: { value: 0 },
+      },
+    });
+
+    gui.add(material.uniforms.uBigWavesElevation, 'value').min(0).max(1).step(0.001).name('uBigWavesElevation');
+    gui.add(material.uniforms.uBigWavesFrequency.value, 'x').min(0).max(10).step(0.001).name('uBigWavesFrequencyX');
+    gui.add(material.uniforms.uBigWavesFrequency.value, 'y').min(0).max(10).step(0.001).name('uBigWavesFrequencyY');
+    gui.add(material.uniforms.uBigWavesSpeed, 'value').min(0).max(4).step(0.001).name('uBigWavesSpeed');
+
     model = new THREE.Mesh(geometry, material);
     model.rotation.x = -Math.PI * 0.5;
     scene.add(model);
@@ -86,6 +99,9 @@ const App = function () {
   };
 
   const render = function () {
+    const elapsedTime = clock.getElapsedTime();
+    material.uniforms.uTime.value = elapsedTime;
+
     if (isRequestRender) {
       renderer.setSize(ww, wh);
       renderer.render(scene, camera);
