@@ -15,6 +15,8 @@ const App = function () {
   const $container = document.querySelector('.container');
   let $canvas;
 
+  const debugObject = {};
+
   const init = function () {
     // Window
     ww = window.innerWidth;
@@ -45,7 +47,7 @@ const App = function () {
     controls.addEventListener('change', renderRequest);
 
     // Gui
-    gui = new dat.GUI();
+    gui = new dat.GUI({ width: 340 });
 
     // Clock
     clock = new THREE.Clock();
@@ -71,6 +73,9 @@ const App = function () {
 
   // Setting -------------------
   const setModels = function () {
+    debugObject.depthColor = '#0000ff';
+    debugObject.surfaceColor = '#8888ff';
+
     geometry = new THREE.PlaneGeometry(2, 2, 128, 128);
     material = new THREE.ShaderMaterial({
       vertexShader: vertexShader,
@@ -80,6 +85,10 @@ const App = function () {
         uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
         uBigWavesSpeed: { value: 0.75 },
         uTime: { value: 0 },
+        uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
+        uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
+        uColorOffset: { value: 0.25 },
+        uColorMultiplier: { value: 2 },
       },
     });
 
@@ -87,6 +96,14 @@ const App = function () {
     gui.add(material.uniforms.uBigWavesFrequency.value, 'x').min(0).max(10).step(0.001).name('uBigWavesFrequencyX');
     gui.add(material.uniforms.uBigWavesFrequency.value, 'y').min(0).max(10).step(0.001).name('uBigWavesFrequencyY');
     gui.add(material.uniforms.uBigWavesSpeed, 'value').min(0).max(4).step(0.001).name('uBigWavesSpeed');
+    gui.addColor(debugObject, 'depthColor').onChange(() => {
+      material.uniforms.uDepthColor.value.set(debugObject.depthColor);
+    });
+    gui.addColor(debugObject, 'surfaceColor').onChange(() => {
+      material.uniforms.uSurfaceColor.value.set(debugObject.surfaceColor);
+    });
+    gui.add(material.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('uColorOffset');
+    gui.add(material.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.001).name('uColorMultiplier');
 
     model = new THREE.Mesh(geometry, material);
     model.rotation.x = -Math.PI * 0.5;
