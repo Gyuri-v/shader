@@ -77,7 +77,7 @@ const App = function () {
     const flagTexture = textureLoader.load('/resources/textures/flag-french.jpg');
 
     geometry = new THREE.PlaneBufferGeometry(1, 1, 32, 32);
-    material = new THREE.RawShaderMaterial({
+    material = new THREE.ShaderMaterial({
       vertexShader: testVertexShader,
       fragmentShader: testFragmentShader,
       uniforms: {
