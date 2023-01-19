@@ -32,7 +32,7 @@ const App = function () {
 
     // Camera
     camera = new THREE.PerspectiveCamera(70, ww / wh, 0.1, 1000);
-    camera.position.set(0.25, -0.25, 1);
+    camera.position.set(1, 1, 1);
     scene.add(camera);
 
     // Light
@@ -73,32 +73,10 @@ const App = function () {
 
   // Setting -------------------
   const setModels = function () {
-    const textureLoader = new THREE.TextureLoader();
-    const flagTexture = textureLoader.load('/resources/textures/flag-french.jpg');
-
-    geometry = new THREE.PlaneBufferGeometry(1, 1, 32, 32);
-    material = new THREE.ShaderMaterial({
-      vertexShader: testVertexShader,
-      fragmentShader: testFragmentShader,
-      uniforms: {
-        uFrequency: { value: new THREE.Vector2(10, 5) },
-        uTime: { value: 0 },
-        uColor: { value: new THREE.Color('orange') },
-        uTexture: { value: flagTexture },
-      },
-    });
-
-    const count = geometry.attributes.position.count;
-    const randoms = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      randoms[i] = Math.random();
-    }
-    geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
-
-    console.log(geometry.attributes.uv);
-
+    geometry = new THREE.PlaneGeometry(2, 2, 128, 128);
+    material = new THREE.MeshBasicMaterial();
     model = new THREE.Mesh(geometry, material);
-    model.scale.y = 2 / 3;
+    model.rotation.x = -Math.PI * 0.5;
     scene.add(model);
   };
 
@@ -108,9 +86,6 @@ const App = function () {
   };
 
   const render = function () {
-    const elapsedTime = clock.getElapsedTime();
-    material.uniforms.uTime.value = elapsedTime;
-
     if (isRequestRender) {
       renderer.setSize(ww, wh);
       renderer.render(scene, camera);
