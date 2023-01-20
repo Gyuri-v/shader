@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import dat from 'dat.gui';
 
-import vertexShader from '../glsl/vertex.glsl';
-import fragmentShader from '../glsl/fragment.glsl';
+import vertexShader from '../shader/wave/vertex.glsl';
+import fragmentShader from '../shader/wave/fragment.glsl';
 
 const App = function () {
   let ww, wh;
@@ -76,7 +76,7 @@ const App = function () {
     debugObject.depthColor = '#186691';
     debugObject.surfaceColor = '#9bd8ff';
 
-    geometry = new THREE.PlaneGeometry(2, 2, 128, 128);
+    geometry = new THREE.PlaneGeometry(2, 2, 512, 512);
     material = new THREE.ShaderMaterial({
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
@@ -84,11 +84,18 @@ const App = function () {
         uBigWavesElevation: { value: 0.2 },
         uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
         uBigWavesSpeed: { value: 0.75 },
-        uTime: { value: 0 },
+
+        uSmallWavesElevation: { value: 0.15 },
+        uSmallWavesFrequency: { value: 5 },
+        uSmallWavesSpeed: { value: 0.2 },
+        uSmallIterations: { value: 4 },
+
         uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
         uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
         uColorOffset: { value: 0.08 },
         uColorMultiplier: { value: 5 },
+
+        uTime: { value: 0 },
       },
     });
 
@@ -96,6 +103,12 @@ const App = function () {
     gui.add(material.uniforms.uBigWavesFrequency.value, 'x').min(0).max(10).step(0.001).name('uBigWavesFrequencyX');
     gui.add(material.uniforms.uBigWavesFrequency.value, 'y').min(0).max(10).step(0.001).name('uBigWavesFrequencyY');
     gui.add(material.uniforms.uBigWavesSpeed, 'value').min(0).max(4).step(0.001).name('uBigWavesSpeed');
+
+    gui.add(material.uniforms.uSmallWavesElevation, 'value').min(0).max(1).step(0.001).name('uSmallWavesElevation');
+    gui.add(material.uniforms.uSmallWavesFrequency, 'value').min(0).max(30).step(0.001).name('uSmallWavesFrequency');
+    gui.add(material.uniforms.uSmallWavesSpeed, 'value').min(0).max(4).step(0.001).name('uSmallWavesSpeed');
+    gui.add(material.uniforms.uSmallIterations, 'value').min(0).max(5).step(1).name('uSmallIterations');
+
     gui.addColor(debugObject, 'depthColor').onChange(() => {
       material.uniforms.uDepthColor.value.set(debugObject.depthColor);
     });
