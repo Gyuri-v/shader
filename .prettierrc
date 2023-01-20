@@ -6,5 +6,5 @@
   "trailingComma": "all",
   "endOfLine": "lf",
   "semi": true,
-  "arrowParens": "always"
+  "arrowParens": "always",
 }

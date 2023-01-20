@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import dat from 'dat.gui';
 
+import vertexShader from '../shader/galaxy/vertex.glsl';
+import fragmentShader from '../shader/galaxy/fragment.glsl';
+
 const App = function () {
   const $container = document.querySelector('.container');
 
@@ -34,7 +37,7 @@ const App = function () {
 
     // Renderer
     renderer = new THREE.WebGL1Renderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(window.devicePixelRatio, 2);
     renderer.setClearColor('#000', 1.0);
     renderer.setSize(ww, wh);
     canvas = renderer.domElement;
@@ -91,6 +94,7 @@ const App = function () {
 
     const positions = new Float32Array(parameters.count * 3);
     const colors = new Float32Array(parameters.count * 3);
+    const scales = new Float32Array(parameters.count * 1);
 
     const insideColor = new THREE.Color(parameters.insideColor);
     const outsideColor = new THREE.Color(parameters.outsideColor);
@@ -118,15 +122,22 @@ const App = function () {
       colors[i3] = mixedColor.r;
       colors[i3 + 1] = mixedColor.g;
       colors[i3 + 2] = mixedColor.b;
+
+      // Scale
+      scales[i] = Math.random();
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
 
     // Material
-    material = new THREE.PointsMaterial({
-      size: parameters.size,
-      sizeAttenuation: true,
+    material = new THREE.ShaderMaterial({
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+      uniforms: {
+        uSize: { value: 8 * renderer.getPixelRatio() },
+      },
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       vertexColors: true,
