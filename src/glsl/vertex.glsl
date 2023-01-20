@@ -3,6 +3,9 @@ uniform float uBigWavesSpeed;
 uniform float uTime;
 uniform vec2 uBigWavesFrequency;
 
+uniform vec3 uDepthColor;
+uniform vec3 uSurfaceColor;
+
 varying float vElevation;
 
 void main()

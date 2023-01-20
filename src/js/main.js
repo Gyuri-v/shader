@@ -73,8 +73,8 @@ const App = function () {
 
   // Setting -------------------
   const setModels = function () {
-    debugObject.depthColor = '#0000ff';
-    debugObject.surfaceColor = '#8888ff';
+    debugObject.depthColor = '#186691';
+    debugObject.surfaceColor = '#9bd8ff';
 
     geometry = new THREE.PlaneGeometry(2, 2, 128, 128);
     material = new THREE.ShaderMaterial({
@@ -87,8 +87,8 @@ const App = function () {
         uTime: { value: 0 },
         uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
         uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
-        uColorOffset: { value: 0.25 },
-        uColorMultiplier: { value: 2 },
+        uColorOffset: { value: 0.08 },
+        uColorMultiplier: { value: 5 },
       },
     });
 
