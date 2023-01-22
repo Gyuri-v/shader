@@ -9,7 +9,7 @@ const App = function () {
   const $container = document.querySelector('.container');
 
   let ww, wh;
-  let renderer, scene, camera, light, controls, gui, canvas;
+  let renderer, scene, camera, light, controls, gui, canvas, clock;
   let geometry = null;
   let material = null;
   let points = null;
@@ -54,6 +54,9 @@ const App = function () {
     // Light
     light = new THREE.AmbientLight('#fff', 1);
     scene.add(light);
+
+    // Clock
+    clock = new THREE.Clock();
 
     // Controls
     controls = new OrbitControls(camera, canvas);
@@ -136,7 +139,8 @@ const App = function () {
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
       uniforms: {
-        uSize: { value: 8 * renderer.getPixelRatio() },
+        uTime: { value: 0 },
+        uSize: { value: 30 * renderer.getPixelRatio() },
       },
       depthWrite: false,
       blending: THREE.AdditiveBlending,
@@ -154,6 +158,10 @@ const App = function () {
   };
 
   const render = function () {
+    const elapsedTime = clock.getElapsedTime();
+
+    material.uniforms.uTime.value = elapsedTime;
+
     if (isRequestRender) {
       renderer.setSize(ww, wh);
       renderer.render(scene, camera);
